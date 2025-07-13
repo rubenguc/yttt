@@ -7,12 +7,14 @@ interface TranslationProps {
   isCompleted: boolean;
   translation: string;
   error: boolean;
+  onUpdateTranslation: (translation: string) => void;
 }
 
 export const Translation = ({
   isCompleted,
   translation,
   error,
+  onUpdateTranslation,
 }: TranslationProps) => {
   const [cardIsExpanded, setCardIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,6 +52,11 @@ export const Translation = ({
 
     const vttContent = "WEBVTT\n\n" + processedLines.join("\n");
     downloadFile("transcription.vtt", vttContent, "text/vtt");
+  };
+
+  const handleUpdate = () => {
+    setIsEditing(false);
+    onUpdateTranslation(translationText);
   };
 
   if (error) return null;
@@ -122,7 +129,7 @@ export const Translation = ({
           {/* Botón Guardar solo si está en modo edición */}
           {isEditing && (
             <div className="mt-2 flex justify-end">
-              <Button size="sm" onClick={() => setIsEditing(false)}>
+              <Button size="sm" onClick={handleUpdate}>
                 Save
               </Button>
             </div>

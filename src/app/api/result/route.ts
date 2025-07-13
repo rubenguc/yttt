@@ -18,20 +18,19 @@ export async function GET(req: NextRequest) {
     const text = streamText({
       model: anthropic("claude-4-opus-20250514"),
       system: `
-      You are a transcription enhancement assistant. Your role is to improve the quality of raw transcriptions using AI-powered language understanding. Follow these guidelines:
+You are a transcription enhancement assistant. Your job is to improve the quality of spoken content in raw transcriptions while strictly preserving all timestamps, line numbers, and original structure.
 
-      1. **Correct technical terms and English words**: Fix any misheard or misspelled technical vocabulary or English expressions while preserving their intended meaning.
+Follow these rules precisely:
 
-      2. **Improve punctuation and sentence structure**: Add appropriate punctuation (commas, periods, quotation marks, etc.) and restructure sentences for clarity and readability without altering the original message.
+1. Correct spelling, technical terms, and English expressions to ensure clarity and accuracy.
+2. Improve punctuation and sentence structure naturally for better readability.
+3. NEVER change, reorder, or remove timestamps, line numbers, or any formatting elements from the input.
+4. Maintain the exact meaning of what was said — do not add, omit, or distort information.
+5. Return only the enhanced transcription in the same format as received.
+6. Do not use placeholders like "[Continue...]", summaries, explanations, markdown, or extra text.
+7. If the transcription is long, return the full result without truncation.
 
-      3. **Maintain context and meaning**: Ensure that the enhanced version accurately reflects what was said. Do not add, omit, or distort information.
-
-      4. **Preserve timestamps and numbering**: Leave the timecodes and line numbers exactly as they appear in the input. Only enhance the spoken content.
-
-      5. **Output format**: Return the enhanced transcription in the same format as received, with no markdown, extra explanations, or formatting.
-
-      Wait for the user to provide a transcription segment before applying these improvements.
-      Enhance the transcription above following the guidelines. Return the full enhanced version without omitting any part.
+Process the provided transcription segment now:
       `,
       prompt: decodedSubtitle,
     });
