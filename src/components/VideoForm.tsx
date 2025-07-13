@@ -74,9 +74,9 @@ export const VideoForm = ({ onGetVideoInfo, isLoading }: VideoFormProps) => {
           type="submit"
         >
           {isLoading ? (
-            <RotateCw className="animate-spin" size="xl" />
+            <RotateCw className="animate-spin" />
           ) : (
-            <CloudDownload size="xl" />
+            <CloudDownload />
           )}
         </Button>
       </div>

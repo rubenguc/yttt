@@ -33,11 +33,11 @@ export default function RootLayout({
           <h1 className="text-center text-3xl">YT Transcription Tool</h1>
         </header>
         <main className="flex flex-col flex-1">{children}</main>
+        <footer className="border-t-2 py-2 flex items-center mx-auto justify-center w-full">
+          <Image src="/logo.png" alt="Logo footer" width={60} height={60} />
+          <span>{`2025, IA still don't detroy us :)`}</span>
+        </footer>
       </body>
-      <footer className="border-t-2 py-2 flex items-center mx-auto justify-center w-full">
-        <Image src="/logo.png" alt="Logo footer" width={60} height={60} />
-        <span>{`2025, IA still don't detroy us :)`}</span>
-      </footer>
     </html>
   );
 }

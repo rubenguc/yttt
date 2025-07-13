@@ -3,28 +3,38 @@
 import axios from "axios";
 
 export async function fetchVideoData(videoId: string) {
-  const response = await axios.get(
-    `https://content-youtube.googleapis.com/youtube/v3/videos`,
-    {
-      params: {
-        key: process.env.YT_API_KEY,
-        part: "snippet,contentDetails,statistics",
-        id: videoId,
+  try {
+    const response = await axios.get(
+      `https://content-youtube.googleapis.com/youtube/v3/videos`,
+      {
+        params: {
+          key: process.env.YT_API_KEY,
+          part: "snippet,contentDetails,statistics",
+          id: videoId,
+        },
       },
-    },
-  );
-  const videoData = response.data?.items?.[0];
-  const duration = videoData?.contentDetails?.duration;
-  const formattedDuration = convertDurationToHHMM(duration);
+    );
+    const videoData = response.data?.items?.[0];
+    const duration = videoData?.contentDetails?.duration;
+    const formattedDuration = convertDurationToHHMM(duration);
 
-  const lng = videoData?.snippet.defaultAudioLanguage;
+    const lng = videoData?.snippet.defaultAudioLanguage;
 
-  return {
-    id: videoData?.id,
-    title: videoData?.snippet?.title,
-    duration: formattedDuration,
-    lng,
-  };
+    return {
+      id: videoData?.id,
+      title: videoData?.snippet?.title,
+      duration: formattedDuration,
+      lng,
+    };
+  } catch (error) {
+    console.log("fetchVideoData error:", error);
+    return {
+      id: videoId,
+      title: "",
+      duration: "",
+      lng: "",
+    };
+  }
 }
 
 function convertDurationToHHMM(duration: string | undefined): string {
