@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Youtube Transcription tool
 
-## Getting Started
+Web app to transcribe and translate YouTube videos.
 
-First, run the development server:
-
-```bash
+## How to run
+1. config your env vars
+```
+YT_API_KEY=
+XL8_API_KEY=
+ANTHROPIC_API_KEY=
+```
+2. install dependencies
+```
+npm install
+```
+```
+yarn install
+```
+```
+pnpm install
+```
+```
+bun install
+```
+3. run the app
+```
 npm run dev
-# or
+```
+```
 yarn dev
-# or
+```
+```
 pnpm dev
-# or
+```
+```
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Youtube](https://developers.google.com/youtube/v3)
 
-## Learn More
+For fetch video data:
+```
+https://content-youtube.googleapis.com/youtube/v3/videos
+```
 
-To learn more about Next.js, take a look at the following resources:
+- [XL8](https://www.xl8.ai/documentations)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Request transcription:
+```
+https://api.xl8.ai/v1/autotemplate/request
+```
+Fetch transcription status:
+```
+https://api.xl8.ai/v1autotemplate/requests/${id}
+```
+Get the encoded transcription:
+```
+https://api.xl8.ai/v1/autotemplate/request/file/srt/${request_id}
+```
+Request translation:
+```
+https://api.xl8.ai/v1/autotemplate/request
+```
+Fetch translation status:
+```
+https://api.xl8.ai/v1/trans/requests/file/${request_id}
+```
+Get the encoded translation:
+```
+https://api.xl8.ai/v1/trans/requests/file/${request_id}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Vercel AI SDK](https://ai-sdk.dev/providers/ai-sdk-providers/anthropic)
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+
+- Fetch Video data: Fetch video data to display the title, thumbnail and duration.
+- Transcription: Request and fetch transcription for the original video.
+- Translation: Translate the transcription to a target language.
+- IA parsing: Parsing the translation to enhance the transcription.
+- Subtitles: Editing or download in srt or vtt format.
+
+## Technlogiee
+- Next.js for a fast building of a monolith and the neede.d of protecting the APIs keys within sever actions or APIs.
+- Shadcn and tailwind for fast development and styling.
+- Vercel AI SDK for fast development and integration with AI models.
+- Axios for handling HTTP requests in a easier way.
