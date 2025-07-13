@@ -63,7 +63,7 @@ export const Translation = ({
           trimmedLine,
         )
       ) {
-        currentTimestamp = trimmedLine.replace(/,/g, ".");
+        currentTimestamp = trimmedLine?.replace(/,/g, ".");
       } else if (trimmedLine) {
         currentText.push(trimmedLine);
       }
@@ -84,7 +84,9 @@ export const Translation = ({
 
     function flushCurrentBlock() {
       vttLines.push(currentBlockNumber);
-      vttLines.push(currentTimestamp.replace(/\s*-->\s*/g, " --> "));
+      vttLines.push(
+        currentTimestamp?.replace(/\s*-->\s*/g, " --> ") || currentTimestamp,
+      );
       vttLines.push(...currentText);
       vttLines.push("");
       currentBlockNumber = null;
