@@ -50,7 +50,7 @@ export const VideoForm = ({ onGetVideoInfo, isLoading }: VideoFormProps) => {
         duration: response.duration,
         lng: response.lng,
         thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
-        url: `https://www.youtube.com/watch?v=${videoId}`,
+        url: youtubeUrl,
       });
     } catch (err) {
       setError("Failed to fetch video information.");
@@ -66,11 +66,11 @@ export const VideoForm = ({ onGetVideoInfo, isLoading }: VideoFormProps) => {
           onChange={handleUrlChange}
           placeholder="https://www.youtube.com/watch?v=MyPikw6bzbE"
           disabled={isLoading}
-          className="max-w-xl w-md rounded-r-none h-full pr-20"
+          className="max-w-xl w-md rounded-r-none h-full pr-20 border-black"
         />
         <Button
           disabled={isLoading}
-          className="cursor-pointer h-full w-16 absolute top-0 right-0"
+          className="cursor-pointer h-full w-16 absolute top-0 -right-1"
           type="submit"
         >
           {isLoading ? (

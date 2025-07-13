@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
           <Image src="/logo.png" alt="Logo footer" width={60} height={60} />
           <span>{`2025, IA still don't detroy us :)`}</span>
         </footer>
+        <Toaster />
       </body>
     </html>
   );

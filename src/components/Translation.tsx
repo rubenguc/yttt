@@ -1,16 +1,26 @@
-import { useToggle } from "react-use";
 import { Button } from "./ui/button";
-import { ChevronDown, ChevronUp, Download } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Edit } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TranslationProps {
   isCompleted: boolean;
   translation: string;
+  error: boolean;
 }
 
-export const Translation = ({ isCompleted, translation }: TranslationProps) => {
+export const Translation = ({
+  isCompleted,
+  translation,
+  error,
+}: TranslationProps) => {
   const [cardIsExpanded, setCardIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [translationText, setTranslationText] = useState("");
+
+  useEffect(() => {
+    setTranslationText(translation);
+  }, [translation]);
 
   function downloadFile(filename, content, contentType = "text/plain") {
     const element = document.createElement("a");
@@ -24,15 +34,14 @@ export const Translation = ({ isCompleted, translation }: TranslationProps) => {
   }
 
   const handleDownloadSRT = () => {
-    downloadFile("transcription.srt", translation, "application/x-subrip");
+    downloadFile("transcription.srt", translationText, "application/x-subrip");
   };
 
   const handleDownloadVTT = () => {
-    const lines = translation.split(/\r?\n/);
+    const lines = translationText.split(/\r?\n/);
     const processedLines = lines.map((line) => {
       const timestampRegex =
         /^(\d{2}:\d{2}:\d{2}),(\d{3}) --> (\d{2}:\d{2}:\d{2}),(\d{3})$/;
-      console.log(timestampRegex.test(line.trim()));
       if (timestampRegex.test(line.trim())) {
         return line.replace(/,/g, ".");
       }
@@ -43,16 +52,35 @@ export const Translation = ({ isCompleted, translation }: TranslationProps) => {
     downloadFile("transcription.vtt", vttContent, "text/vtt");
   };
 
+  if (error) return null;
+
   return (
     <div className="slide-up-enter">
       <div className="flex justify-end gap-4 mb-4">
-        <Button disabled={!isCompleted} size="sm" onClick={handleDownloadSRT}>
+        <Button
+          disabled={!isCompleted || error}
+          size="sm"
+          onClick={handleDownloadSRT}
+        >
           <Download />
           <span>Download SRT</span>
         </Button>
-        <Button disabled={!isCompleted} size="sm" onClick={handleDownloadVTT}>
+        <Button
+          disabled={!isCompleted || error}
+          size="sm"
+          onClick={handleDownloadVTT}
+        >
           <Download />
           <span>Download VTT</span>
+        </Button>
+        <Button
+          disabled={!isCompleted || error || !isCompleted}
+          size="sm"
+          variant="outline"
+          onClick={() => setIsEditing(true)}
+        >
+          <Edit />
+          <span>Edit</span>
         </Button>
       </div>
       <Card
@@ -60,7 +88,7 @@ export const Translation = ({ isCompleted, translation }: TranslationProps) => {
       >
         <CardHeader className="bg-black text-white relative">
           <h2 className="text-center">Translation:</h2>
-          <button className="absolute top-1/2 -translate-y-1/2 right-3 hover:bg-red-500 rounded-full">
+          <button className="absolute top-1/2 -translate-y-1/2 right-3 hover:bg-gray-500/40 rounded-full">
             {cardIsExpanded ? (
               <ChevronUp
                 color="white"
@@ -81,7 +109,26 @@ export const Translation = ({ isCompleted, translation }: TranslationProps) => {
           </button>
         </CardHeader>
         <CardContent className="overflow-auto pt-0 pb-5">
-          <code className="whitespace-pre-line">{translation}</code>
+          {isEditing ? (
+            <textarea
+              className="w-full h-fit p-2 border rounded bg-white text-black font-mono field-sizing-content"
+              value={translationText}
+              onChange={(e) => setTranslationText(e.target.value)}
+            />
+          ) : (
+            <code className="whitespace-pre-line">{translationText}</code>
+          )}
+
+          {/* Botón Guardar solo si está en modo edición */}
+          {isEditing && (
+            <div className="mt-2 flex justify-end">
+              <Button size="sm" onClick={() => setIsEditing(false)}>
+                Save
+              </Button>
+            </div>
+          )}
+
+          {/* <code className="whitespace-pre-line">{translation}</code> */}
         </CardContent>
       </Card>
     </div>
