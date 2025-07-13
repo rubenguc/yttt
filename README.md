@@ -5,7 +5,7 @@ Web app to transcribe and translate YouTube videos.
 ## How to run
 1. config your env vars
 ```
-YT_API_KEY=
+YOUTUBE_API_KEY=
 XL8_API_KEY=
 ANTHROPIC_API_KEY=
 ```

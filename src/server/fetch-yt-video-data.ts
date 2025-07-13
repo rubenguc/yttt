@@ -8,7 +8,7 @@ export async function fetchVideoData(videoId: string) {
       `https://content-youtube.googleapis.com/youtube/v3/videos`,
       {
         params: {
-          key: process.env.YT_API_KEY,
+          key: process.env.YOUTUBE_API_KEY,
           part: "snippet,contentDetails,statistics",
           id: videoId,
         },
