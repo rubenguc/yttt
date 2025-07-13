@@ -2,6 +2,7 @@
 import { Instructions } from "@/components/Instruccions";
 import { PoweredBy } from "@/components/PoweredBy";
 import { Translation } from "@/components/Translation";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoForm } from "@/components/VideoForm";
@@ -469,6 +470,7 @@ export default function Home() {
         <h2 className="text-center mb-5 text-xl font-bold text-gray-700">
           Generate English Subs
         </h2>
+
         <VideoForm onGetVideoInfo={handleVideoInfo} isLoading={isLoading} />
 
         {videoInfo.id && (

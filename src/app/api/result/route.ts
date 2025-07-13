@@ -1,6 +1,5 @@
 import { getTranslation } from "@/server/fetch-xl8-translation";
 import { anthropic } from "@ai-sdk/anthropic";
-// import { google } from "@ai-sdk/google";
 import { streamText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,8 +16,7 @@ export async function GET(req: NextRequest) {
 
     console.log("starting IA");
     const text = streamText({
-      // model: google("models/gemini-2.0-flash-lite"),
-      model: anthropic("claude-3-5-sonnet-latest"),
+      model: anthropic("claude-4-opus-20250514"),
       system: `
       You are a transcription enhancement assistant. Your role is to improve the quality of raw transcriptions using AI-powered language understanding. Follow these guidelines:
 
@@ -32,27 +30,13 @@ export async function GET(req: NextRequest) {
 
       5. **Output format**: Return the enhanced transcription in the same format as received, with no markdown, extra explanations, or formatting.
 
-      Example Input:
-      1
-      00:00:00,079 --> 00:00:02,497
-      You can just report it to the police.
-      The law has to solve it.
-
-      Enhanced Output:
-      1
-      00:00:00,079 --> 00:00:02,497
-      You can just report it to the police. The law has to solve it.
-
       Wait for the user to provide a transcription segment before applying these improvements.
+      Enhance the transcription above following the guidelines. Return the full enhanced version without omitting any part.
       `,
       prompt: decodedSubtitle,
     });
 
     return text.toDataStreamResponse();
-    // return NextResponse.json({
-    //   msg: "hello world",
-    // });
-    //
   } catch (err) {
     console.log("api error:", err);
     return NextResponse.error(err);
