@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp, Download, Edit } from "lucide-react";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { useEffect, useState } from "react";
 
 interface TranslationProps {
@@ -41,16 +41,59 @@ export const Translation = ({
 
   const handleDownloadVTT = () => {
     const lines = translationText.split(/\r?\n/);
-    const processedLines = lines.map((line) => {
-      const timestampRegex =
-        /^(\d{2}:\d{2}:\d{2}),(\d{3}) --> (\d{2}:\d{2}:\d{2}),(\d{3})$/;
-      if (timestampRegex.test(line.trim())) {
-        return line.replace(/,/g, ".");
+    const vttLines = [];
+
+    vttLines.push("WEBVTT");
+    vttLines.push("");
+
+    let currentBlockNumber = null;
+    let currentTimestamp = null;
+    const currentText = [];
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim();
+
+      if (/^\d+$/.test(trimmedLine)) {
+        if (currentBlockNumber !== null) {
+          flushCurrentBlock();
+        }
+        currentBlockNumber = trimmedLine;
+      } else if (
+        /(\d{1,2}:\d{2}:\d{2}[,.]\d{3}|\d{1,2}:\d{2}[,.]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]\d{3}|\d{1,2}:\d{2}[,.]\d{3})/.test(
+          trimmedLine,
+        )
+      ) {
+        currentTimestamp = trimmedLine.replace(/,/g, ".");
+      } else if (trimmedLine) {
+        currentText.push(trimmedLine);
       }
-      return line;
+
+      if (
+        !trimmedLine &&
+        currentBlockNumber &&
+        currentTimestamp &&
+        currentText.length
+      ) {
+        flushCurrentBlock();
+      }
     });
 
-    const vttContent = "WEBVTT\n\n" + processedLines.join("\n");
+    if (currentBlockNumber && currentTimestamp && currentText.length) {
+      flushCurrentBlock();
+    }
+
+    function flushCurrentBlock() {
+      vttLines.push(currentBlockNumber);
+      vttLines.push(currentTimestamp.replace(/\s*-->\s*/g, " --> "));
+      vttLines.push(...currentText);
+      vttLines.push("");
+      currentBlockNumber = null;
+      currentTimestamp = null;
+      currentText.length = 0;
+    }
+
+    const vttContent = vttLines.join("\n");
+
     downloadFile("transcription.vtt", vttContent, "text/vtt");
   };
 
@@ -65,6 +108,7 @@ export const Translation = ({
     <div className="slide-up-enter">
       <div className="flex justify-end gap-4 mb-4">
         <Button
+          className="cursor-pointer"
           disabled={!isCompleted || error}
           size="sm"
           onClick={handleDownloadSRT}
@@ -73,6 +117,7 @@ export const Translation = ({
           <span>Download SRT</span>
         </Button>
         <Button
+          className="cursor-pointer"
           disabled={!isCompleted || error}
           size="sm"
           onClick={handleDownloadVTT}
@@ -81,6 +126,7 @@ export const Translation = ({
           <span>Download VTT</span>
         </Button>
         <Button
+          className="cursor-pointer"
           disabled={!isCompleted || error || !isCompleted}
           size="sm"
           variant="outline"
@@ -125,8 +171,8 @@ export const Translation = ({
           ) : (
             <code className="whitespace-pre-line">{translationText}</code>
           )}
-
-          {/* Botón Guardar solo si está en modo edición */}
+        </CardContent>
+        <CardFooter className="flex justify-end py-3">
           {isEditing && (
             <div className="mt-2 flex justify-end">
               <Button size="sm" onClick={handleUpdate}>
@@ -134,9 +180,7 @@ export const Translation = ({
               </Button>
             </div>
           )}
-
-          {/* <code className="whitespace-pre-line">{translation}</code> */}
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   );

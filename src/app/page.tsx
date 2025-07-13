@@ -2,7 +2,6 @@
 import { Instructions } from "@/components/Instruccions";
 import { PoweredBy } from "@/components/PoweredBy";
 import { Translation } from "@/components/Translation";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoForm } from "@/components/VideoForm";
@@ -132,12 +131,13 @@ export default function Home() {
 
     // set Video
     setVideoInfo(videoInfo);
-    setStep(TRANSCRIPTIONS_STEPS[1]);
 
     if (!videoInfo.url) {
       // setError("Invalid video URL");
       return;
     }
+
+    setStep(TRANSCRIPTIONS_STEPS[1]);
 
     // fetch /autotemplate/request
     const { request_id } = await requestTranscription(
@@ -154,8 +154,8 @@ export default function Home() {
   return (
     <div>
       <div className="mx-auto max-w-2xl mt-20">
-        <h2 className="text-center mb-5 text-xl font-bold text-gray-700">
-          Generate English Subs
+        <h2 className="text-center mb-5 text-xl font-bold text-gray-700 max-w-[28ch] mx-auto">
+          Generate English Subs for non-English Videos powered by AI
         </h2>
 
         <VideoForm onGetVideoInfo={handleVideoInfo} isLoading={isLoading} />

@@ -38,7 +38,7 @@ export default function RootLayout({
           <Image src="/logo.png" alt="Logo footer" width={60} height={60} />
           <span>{`2025, AI still don't detroy us :)`}</span>
         </footer>
-        <Toaster />
+        <Toaster position="top-center" richColors duration={3000} closeButton />
       </body>
     </html>
   );
