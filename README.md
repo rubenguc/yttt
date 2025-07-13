@@ -85,7 +85,7 @@ https://api.xl8.ai/v1/trans/requests/file/${request_id}
 - IA parsing: Parsing the translation to enhance the transcription.
 - Subtitles: Editing or download in srt or vtt format.
 
-## Technlogiee
+## Technologies
 - Next.js for a fast building of a monolith and the neede.d of protecting the APIs keys within sever actions or APIs.
 - Shadcn and tailwind for fast development and styling.
 - Vercel AI SDK for fast development and integration with AI models.
