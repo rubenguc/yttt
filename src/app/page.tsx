@@ -116,6 +116,9 @@ export default function Home() {
   const isLoading = step !== TRANSCRIPTIONS_STEPS[4] && step !== "";
   const isCompleted = step === TRANSCRIPTIONS_STEPS[4] && !error;
 
+  const showTranslation =
+    step === TRANSCRIPTIONS_STEPS[3] || step === TRANSCRIPTIONS_STEPS[4];
+
   console.log({
     requestId,
   });
@@ -147,8 +150,7 @@ export default function Home() {
             </div>
 
             <div className="max-w-2xl mb-10">
-              {(step === TRANSCRIPTIONS_STEPS[3] ||
-                step === TRANSCRIPTIONS_STEPS[3]) && (
+              {showTranslation && (
                 <Translation
                   isCompleted={isCompleted}
                   translation={translation}
