@@ -64,7 +64,7 @@ export default function Home() {
           }
         }
 
-        setStep(TRANSCRIPTIONS_STEPS[3]);
+        setStep(TRANSCRIPTIONS_STEPS[4]);
       }
     };
 
@@ -114,7 +114,11 @@ export default function Home() {
   }, [requestId, step]);
 
   const isLoading = step !== TRANSCRIPTIONS_STEPS[4] && step !== "";
-  const isCompleted = step === TRANSCRIPTIONS_STEPS[4];
+  const isCompleted = step === TRANSCRIPTIONS_STEPS[4] && !error;
+
+  console.log({
+    requestId,
+  });
 
   return (
     <div>
