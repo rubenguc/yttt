@@ -40,61 +40,25 @@ export const Translation = ({
   };
 
   const handleDownloadVTT = () => {
-    const lines = translationText.split(/\r?\n/);
-    const vttLines = [];
+    const lines = translationText.split("\n");
 
-    vttLines.push("WEBVTT");
-    vttLines.push("");
+    const vttLines = ["WEBVTT\n"];
 
-    let currentBlockNumber = null;
-    let currentTimestamp = null;
-    const currentText = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
 
-    lines.forEach((line) => {
-      const trimmedLine = line.trim();
-
-      if (/^\d+$/.test(trimmedLine)) {
-        if (currentBlockNumber !== null) {
-          flushCurrentBlock();
-        }
-        currentBlockNumber = trimmedLine;
-      } else if (
-        /(\d{1,2}:\d{2}:\d{2}[,.]\d{3}|\d{1,2}:\d{2}[,.]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]\d{3}|\d{1,2}:\d{2}[,.]\d{3})/.test(
-          trimmedLine,
-        )
-      ) {
-        currentTimestamp = trimmedLine?.replace(/,/g, ".");
-      } else if (trimmedLine) {
-        currentText.push(trimmedLine);
+      // Detect timestamp line and replace ',' with '.'
+      if (line.includes("-->")) {
+        vttLines.push(line.replace(/,/g, "."));
+      } else if (/^\d+$/.test(line)) {
+        // Skip sequence number lines (e.g., "1", "2", etc.)
+        continue;
+      } else {
+        vttLines.push(line);
       }
-
-      if (
-        !trimmedLine &&
-        currentBlockNumber &&
-        currentTimestamp &&
-        currentText.length
-      ) {
-        flushCurrentBlock();
-      }
-    });
-
-    if (currentBlockNumber && currentTimestamp && currentText.length) {
-      flushCurrentBlock();
     }
 
-    function flushCurrentBlock() {
-      vttLines.push(currentBlockNumber);
-      vttLines.push(
-        currentTimestamp?.replace(/\s*-->\s*/g, " --> ") || currentTimestamp,
-      );
-      vttLines.push(...currentText);
-      vttLines.push("");
-      currentBlockNumber = null;
-      currentTimestamp = null;
-      currentText.length = 0;
-    }
-
-    const vttContent = vttLines.join("\n");
+    const vttContent = vttLines.join("\n").trim();
 
     downloadFile("transcription.vtt", vttContent, "text/vtt");
   };

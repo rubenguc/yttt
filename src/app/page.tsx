@@ -38,33 +38,18 @@ export default function Home() {
       if (requestId) {
         const response = await fetch(`/api/result?request_id=${requestId}`);
 
-        const reader = response?.body?.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
+        const jsn = await response.json();
 
-        while (!done) {
-          const { value, done: streamDone } = await reader?.read();
-          done = streamDone;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: true });
+        if (jsn.text) {
+          setTranslation(jsn.text);
 
-            const isValidChunk = chunk.startsWith('0:"');
-
-            if (isValidChunk) {
-              const value = chunk.split('0:"')[1];
-              const cleanedChunk = value.trim().slice(0, -1);
-
-              const formattedChunk = cleanedChunk.replaceAll("\\n", "\n");
-
-              setTranslation((prev) => prev + formattedChunk);
-            } else if (chunk.includes("An error occurred")) {
-              setError(true);
-              toast.error("An error occurred generating the translation");
-            }
-          }
+          setStep(TRANSCRIPTIONS_STEPS[4]);
+          return;
+        } else {
+          setError(true);
+          setStep("");
+          toast.error("An error occurred generating the translation");
         }
-
-        setStep(TRANSCRIPTIONS_STEPS[4]);
       }
     };
 
@@ -74,6 +59,7 @@ export default function Home() {
   const handleVideoInfo = async (videoInfo: VideoInfo) => {
     if (videoInfo.id === "") {
       setError(false);
+      setTranslation("");
     }
 
     // set Video
@@ -116,8 +102,7 @@ export default function Home() {
   const isLoading = step !== TRANSCRIPTIONS_STEPS[4] && step !== "";
   const isCompleted = step === TRANSCRIPTIONS_STEPS[4] && !error;
 
-  const showTranslation =
-    step === TRANSCRIPTIONS_STEPS[3] || step === TRANSCRIPTIONS_STEPS[4];
+  const showTranslation = !!translation;
 
   console.log({
     requestId,
@@ -138,16 +123,18 @@ export default function Home() {
 
             <VideoCard videoInfo={videoInfo} isLoading={false} />
 
-            <div className="flex items-center gap-2 justify-center">
-              <Loader
-                className={`${!isCompleted ? "animate-spin" : "hidden"}`}
-              />
-              <p
-                className={`${!isCompleted && "animate-pulse"} text-2xl text-center my-10`}
-              >
-                {step}
-              </p>
-            </div>
+            {!error && (
+              <div className="flex items-center gap-2 justify-center">
+                <Loader
+                  className={`${!isCompleted ? "animate-spin" : "hidden"}`}
+                />
+                <p
+                  className={`${!isCompleted && "animate-pulse"} text-2xl text-center my-10`}
+                >
+                  {step}
+                </p>
+              </div>
+            )}
 
             <div className="max-w-2xl mb-10">
               {showTranslation && (

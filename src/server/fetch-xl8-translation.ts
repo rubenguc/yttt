@@ -40,7 +40,7 @@ export const getTranscriptionStatus = async (request_id) => {
 export const getEncodedTranscription = async (request_id: string) => {
   try {
     const response = await base.get(
-      `https://api.xl8.ai/v1/autotemplate/request/file/srt/${request_id}`,
+      `https://api.xl8.ai/v1/autotemplate/request/file/json/${request_id}`,
     );
 
     return response.data.encoded_subtitle;
