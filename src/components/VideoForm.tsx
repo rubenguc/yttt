@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { fetchVideoData } from "@/server/fetch-yt-video-data";
 import { VideoInfo } from "@/interfaces/global-interfaces";
 import { CloudDownload, RotateCw } from "lucide-react";
-import { toast } from "sonner";
+import { fetchVideoData } from "@/server/fetch-yt-video-data";
 
 interface VideoFormProps {
   onGetVideoInfo: (props: VideoInfo) => void;
@@ -35,29 +34,19 @@ export const VideoForm = ({ onGetVideoInfo, isLoading }: VideoFormProps) => {
     onGetVideoInfo({
       id: "",
       title: "",
-      duration: "",
-      lng: "",
       thumbnail: "",
       url: "",
     });
 
     try {
       const url = new URL(youtubeUrl);
+
       const videoId = url.searchParams.get("v") as string;
-
-      const response = await fetchVideoData(videoId);
-
-      if (response.lng.includes("en")) {
-        return toast.error(
-          "This is an English video, please use a non-English video.",
-        );
-      }
+      const { title } = await fetchVideoData(videoId);
 
       onGetVideoInfo({
         id: videoId,
-        title: response.title,
-        duration: response.duration,
-        lng: response.lng,
+        title,
         thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
         url: youtubeUrl,
       });

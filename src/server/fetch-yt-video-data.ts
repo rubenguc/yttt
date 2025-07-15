@@ -1,60 +1,20 @@
-"use server";
-
 import axios from "axios";
 
 export async function fetchVideoData(videoId: string) {
-  try {
-    const response = await axios.get(
-      `https://content-youtube.googleapis.com/youtube/v3/videos`,
-      {
-        params: {
-          key: process.env.YOUTUBE_API_KEY,
-          part: "snippet,contentDetails,statistics",
-          id: videoId,
-        },
-      },
-    );
-    const videoData = response.data?.items?.[0];
-    const duration = videoData?.contentDetails?.duration;
-    const formattedDuration = convertDurationToHHMM(duration);
+  const thumbnail = `https://img.youtube.com/vi/${videoId}/default.jpg`;
 
-    const lng = videoData?.snippet.defaultAudioLanguage;
+  const response = await axios("https://www.youtube.com/oembed", {
+    params: {
+      format: "json",
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+    },
+  });
 
-    return {
-      id: videoData?.id,
-      title: videoData?.snippet?.title,
-      duration: formattedDuration,
-      lng,
-    };
-  } catch (error) {
-    console.log("fetchVideoData error:", error);
-    return {
-      id: videoId,
-      title: "",
-      duration: "",
-      lng: "",
-    };
-  }
-}
+  const title = response.data.title;
 
-function convertDurationToHHMM(duration: string | undefined): string {
-  if (!duration) {
-    return "00:00";
-  }
-
-  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-
-  if (!match) {
-    return "00:00";
-  }
-
-  const hours = parseInt(match[1] || "0", 10) || 0;
-  const minutes = parseInt(match[2] || "0", 10) || 0;
-  const seconds = parseInt(match[3] || "0", 10) || 0;
-
-  const totalMinutes = hours * 60 + minutes;
-  const formattedMinutes = String(totalMinutes).padStart(2, "0");
-  const formattedSeconds = String(seconds).padStart(2, "0");
-
-  return `${formattedMinutes}:${formattedSeconds}`;
+  return {
+    thumbnail,
+    id: videoId,
+    title: title,
+  };
 }

@@ -5,8 +5,7 @@ const STEPS = [
     id: 1,
     icon: ClipboardPaste,
     title: "Paste URL",
-    description:
-      "Copy and paste the YouTube URL you want to generate subtitles for",
+    description: "Copy and paste the YouTube URL",
   },
   {
     id: 2,

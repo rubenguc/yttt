@@ -10,9 +10,7 @@ import { TRANSCRIPTIONS_STEPS } from "@/constants";
 import { VideoInfo } from "@/interfaces/global-interfaces";
 import {
   getTranscriptionStatus,
-  getTranslationStatus,
   requestTranscription,
-  requestTranslation,
 } from "@/server/fetch-xl8-translation";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,75 +19,24 @@ import { toast } from "sonner";
 export default function Home() {
   const [videoInfo, setVideoInfo] = useState<VideoInfo>({
     title: "",
-    duration: "",
     thumbnail: "",
     id: "",
-    lng: "",
     url: "",
   });
 
-  const [step, setStep] = useState(TRANSCRIPTIONS_STEPS[6]);
+  const [step, setStep] = useState("");
 
   const [requestId, setRequestId] = useState("");
-  const [translation_request_id, setTranslationRequestId] = useState("");
   const [translation, setTranslation] = useState("");
 
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (step !== TRANSCRIPTIONS_STEPS[2]) return;
-
-    // wait /autotemplate/requests/${id} to finish
-    const intervalId = setInterval(async () => {
-      if (requestId) {
-        const response = await getTranscriptionStatus({ id: requestId });
-        if (response.progress === "DONE") {
-          setStep(TRANSCRIPTIONS_STEPS[3]);
-          const { request_id } = await requestTranslation(
-            requestId,
-            response.language.split("-")[0],
-          );
-
-          setTranslationRequestId(request_id);
-
-          setStep(TRANSCRIPTIONS_STEPS[4]);
-        } else if (response.error_msg) {
-          setError(true);
-          toast.error(response.error_msg);
-          setStep("");
-        }
-      }
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestId, step]);
-
-  useEffect(() => {
-    if (step !== TRANSCRIPTIONS_STEPS[4]) return;
-
-    // wait /autotemplate/requests/${id} to finish
-    const intervalId = setInterval(async () => {
-      if (requestId) {
-        const status = await getTranslationStatus(translation_request_id);
-        if (status === 1) {
-          setStep(TRANSCRIPTIONS_STEPS[5]);
-        }
-      }
-    }, 10000);
-
-    return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestId, step]);
-
-  useEffect(() => {
-    if (step !== TRANSCRIPTIONS_STEPS[5]) return;
+    if (step !== TRANSCRIPTIONS_STEPS[3]) return;
 
     const fetchStream = async () => {
       if (requestId) {
-        const response = await fetch(
-          `/api/result?request_id=${translation_request_id}`,
-        );
+        const response = await fetch(`/api/result?request_id=${requestId}`);
 
         const reader = response?.body?.getReader();
         const decoder = new TextDecoder();
@@ -117,7 +64,7 @@ export default function Home() {
           }
         }
 
-        setStep(TRANSCRIPTIONS_STEPS[6]);
+        setStep(TRANSCRIPTIONS_STEPS[3]);
       }
     };
 
@@ -140,22 +87,40 @@ export default function Home() {
     setStep(TRANSCRIPTIONS_STEPS[1]);
 
     // fetch /autotemplate/request
-    const { request_id } = await requestTranscription(
-      videoInfo.url,
-      videoInfo.lng,
-    );
+    const { request_id } = await requestTranscription(videoInfo.url);
     setRequestId(request_id);
     setStep(TRANSCRIPTIONS_STEPS[2]);
   };
 
-  const isLoading = step !== TRANSCRIPTIONS_STEPS[6] && step !== "";
-  const isCompleted = step === TRANSCRIPTIONS_STEPS[6];
+  useEffect(() => {
+    if (step !== TRANSCRIPTIONS_STEPS[2]) return;
+
+    // wait /autotemplate/requests/${id} to finish
+    const intervalId = setInterval(async () => {
+      if (requestId) {
+        const response = await getTranscriptionStatus(requestId);
+        if (response.progress === "DONE") {
+          setStep(TRANSCRIPTIONS_STEPS[3]);
+        } else if (response.error_msg) {
+          setError(true);
+          toast.error(response.error_msg);
+          setStep("");
+        }
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestId, step]);
+
+  const isLoading = step !== TRANSCRIPTIONS_STEPS[4] && step !== "";
+  const isCompleted = step === TRANSCRIPTIONS_STEPS[4];
 
   return (
     <div>
       <div className="mx-auto max-w-2xl mt-20">
         <h2 className="text-center mb-5 text-xl font-bold text-gray-700 max-w-[28ch] mx-auto">
-          Generate English Subs for non-English Videos powered by AI
+          Generate Subs for non-English Videos powered by AI
         </h2>
 
         <VideoForm onGetVideoInfo={handleVideoInfo} isLoading={isLoading} />
@@ -178,8 +143,8 @@ export default function Home() {
             </div>
 
             <div className="max-w-2xl mb-10">
-              {(step === TRANSCRIPTIONS_STEPS[5] ||
-                step === TRANSCRIPTIONS_STEPS[6]) && (
+              {(step === TRANSCRIPTIONS_STEPS[3] ||
+                step === TRANSCRIPTIONS_STEPS[3]) && (
                 <Translation
                   isCompleted={isCompleted}
                   translation={translation}

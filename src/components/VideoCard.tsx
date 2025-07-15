@@ -42,9 +42,6 @@ export const VideoCard = ({
           <p>
             <strong>Title:</strong> {videoInfo.title}
           </p>
-          <p>
-            <strong>Duration:</strong> {videoInfo.duration}{" "}
-          </p>
         </div>
       </CardContent>
     </Card>

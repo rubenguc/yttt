@@ -9,10 +9,10 @@ const base = axios.create({
   },
 });
 
-export const requestTranscription = async (url: string, language: string) => {
+export const requestTranscription = async (url: string) => {
   try {
     const response = await base.post("/autotemplate/request", {
-      language,
+      language: "en",
       media_url: url,
       quick_sync: true,
     });
@@ -22,21 +22,12 @@ export const requestTranscription = async (url: string, language: string) => {
     console.error("requestTranscription error:", err?.response?.data);
     throw new Error("Failed to request transcription");
   }
-  // finally {
-  //   return {
-  //     client_context: {
-  //       filename: "watch",
-  //     },
-  //     request_id: "ea4b6634c5f141f3adabe36767154c39",
-  //     status: 0,
-  //   };
-  // }
 };
 
-export const getTranscriptionStatus = async ({ id }: { id: string }) => {
+export const getTranscriptionStatus = async (request_id) => {
   try {
     const response = await base.get(
-      `https://api.xl8.ai/v1/autotemplate/requests/${id}`,
+      `https://api.xl8.ai/v1/autotemplate/requests/${request_id}`,
     );
 
     return response.data;
@@ -44,29 +35,6 @@ export const getTranscriptionStatus = async ({ id }: { id: string }) => {
     console.error("getTranscriptionStatus error:", err?.response?.data);
     throw new Error("Failed to request transcription");
   }
-  // finally {
-  //   return {
-  //     callback_url: null,
-  //     client_context: {
-  //       filename: "watch",
-  //     },
-  //     created_at: "2025-07-12T16:12:23.432042Z",
-  //     error_msg: "",
-  //     language: "en-US",
-  //     media_duration: 315.26,
-  //     media_filename: "watch",
-  //     owner: {
-  //       email: "jay@xl8.ai",
-  //       first_name: "Jay Jinhyung",
-  //       last_name: "Park",
-  //     },
-  //     progress: "DONE",
-  //     request_id: "ea4b6634c5f141f3adabe36767154c39",
-  //     status: 1,
-  //     transcript_filename: "",
-  //     updated_at: "2025-07-12T16:13:09.054326Z",
-  //   };
-  // }
 };
 
 export const getEncodedTranscription = async (request_id: string) => {
@@ -78,80 +46,6 @@ export const getEncodedTranscription = async (request_id: string) => {
     return response.data.encoded_subtitle;
   } catch (err) {
     console.error("getEncodedTranscription error:", err?.response?.data);
-    throw new Error("Failed to request transcription");
-  }
-
-  // return {
-  //   client_context: {
-  //     filename: "watch",
-  //   },
-  //   encoded_subtitle:
-  //     "MQ0KMDA6MDA6MDAsMDc5IC0tPiAwMDowMDowMiw0OTcNCuq3uOuDpSDqsr3ssLDsl5Ag7Iug6rOg7ZWY66m0IOuPvOyalC4g67KV7J20IO2VtOqysO2VtOyVvOyjoC4NCg0KMg0KMDA6MDA6MDIsNTgxIC0tPiAwMDowMDowNyw0MDcNCuyemOuqu+2VnCDqsbAg7J6I7Jy866m0IOq3uCDsgqzrnozsnbQg7KOX6rCS7J2EIOuwm+yVhOyVvOyjoC4g7Je0IOuwm+uKlOuLpC4g7KeE7KecIOyXtCDrsJvripTri6QuDQoNCjMNCjAwOjAwOjA3LDQ5MSAtLT4gMDA6MDA6MDksNjU5DQrqs6DrsJztlbTslbwg64+8LiDqt7gg7KCE7ZmU67KI7Zi4IO2VtOyEnCDqs6DrsJztlbTslbwg64+8Lg0KDQo0DQowMDowMDoxMiwzNTkgLS0+IDAwOjAwOjE3LDc5OA0K7J2864uoIOyngOq4iCDqsIDsoLjsmKTsi6Ag6rKMIOy7tO2TqO2EsCDslYjsl5Ag67aA7ZKI65Ok7J2EIOyngOq4iCDri6Qg7JWIIOuEo+yWtOyEnCDqsIDsoLjsmKTshajripTrjbANCg0KNQ0KMDA6MDA6MTcsOTIxIC0tPiAwMDowMDoyMiwxNTcNCuyWtOypjOuLpOqwgCDsp4DquIgg7J206rKMIOuLpCDruaDsoLjsnojripQg6rGw7JiI7JqUPyDsspjsnYzsl5Ag7Lu07ZOo7YSw6rCAIOu2iOuPhA0KDQo2DQowMDowMDoyMiwyODEgLS0+IDAwOjAwOjI2LDI3Nw0K65Ok7Ja07Jik6rOgIOuLpCDrj4zslYTqsIDripTrjbAg66qo64uI7YSw6rCAIOyViCDsvJzsoLgg6rCA7KeA6rOgIO2ajOyCrOulvCDsspjsnYwg7ZWcDQoNCjcNCjAwOjAwOjI2LDQwMSAtLT4gMDA6MDA6MzAsODA3DQrrtoTsnYQg67aI66CA64qU642wIOydtOyngOuztOuTnOyXkCDslKjtlLzsnKAg67mo6rCEIOu2iOu5myDrl4Dri6Tqs6Ag7JSo7ZS87Jyg6rCAIOusuOygnOudvOqzoC4NCg0KOA0KMDA6MDA6MzAsODkxIC0tPiAwMDowMDozNCwxMTcNCuy/qOufrOqwgCDrgpjqsJTri6Tqs6Ag7JWE7JiILiDqt7jrnpjshJwg7JSo7ZS87JygIOy/qOufrOqwgCDsi6TsoJzroZwg7JWIIOuPjOyVhOqwgOuNlOudvOqzoOyalC4NCg0KOQ0KMDA6MDA6MzQsMjgxIC0tPiAwMDowMDozNiw3NjgNCuq3uOqyjCDrrLjsoJzrnbzqs6Ag7ZW07IScIOyDiOuhnCDrtoDtkojsnYQg6rWQ7LK07ZWY66Ck6rOgDQoNCjEwDQowMDowMDozNiw4NTIgLS0+IDAwOjAwOjQwLDE1Nw0K6rOg66Ck66W8IO2VmOqzoCDsnojsl4jripTrjbAg7IiY66as7J2EIOyEuOqyjCDrtojrn6zshJwg64uk66W4IOyCrOuejOydhCDrtojroIDqsbDrk6DsmpQsDQoNCjExDQowMDowMDo0MCwyNjEgLS0+IDAwOjAwOjQ0LDU5Nw0K7Lac7J6l7J2ELiDrhKQuIOu2iOuggOuKlOuNsCDsnbTsoJwg7LKY7J2M7JeQIO2ZleyduO2VtCDrs7Tqs6Ag7JSo7ZS87Jyg6rCAIOusuOygnOqwgCDrp57rjIDsmpQuDQoNCjEyDQowMDowMDo0NCw3MDEgLS0+IDAwOjAwOjQ5LDI3Nw0K6re8642wIOyUqO2UvOycoOuKlCDrsoTrpqzripQg6rG466GcIO2VmOqzoCDrl5Dqs6Ag6re467aE7J20IOqwgOyguOqwgOyEnCDslKjtlLzsnKDrpbwg7IOI66GcIOu5hOyKt+2VnA0KDQoxMw0KMDA6MDA6NDksMzgyIC0tPiAwMDowMDo1MywwOTcNCuqygyDspJHsl5Ag6rCA7ISx67mEIOyii+ydgCDqsowg662QIOyeiOuDkCDsl6zsraTrtJDshJwg7Jik7LKc7Jyh67CxIOyXkeyKpOulvCDsg4gg7KCc7ZKI7Jy866GcDQoNCjE0DQowMDowMDo1MywyMjIgLS0+IDAwOjAwOjU5LDk0Nw0K67CU6r+U7KO86ri0IO2WiOuKlOuNsCDrrLjsnpDrpbwg7KO87Iuc64qUIOqyjCDqt7jrnpjtlL3subTrk5zrj4Qg66y47KCc6rCAIOyeiOuLpC4g6re4656Y7ZS97Lm065Oc6rmM7KeA64+EDQrrsJTqvrjshZTslbwg65CgIOqygyDqsJnri6QuIOydtCDrkZAg6rCc6rCAIOyCrOyLpCDrj5nsi5zsl5Ag64KY6rCA64qUIOqyjCDsg4Hsi53soIHsnbTsp4ANCg0KMTUNCjAwOjAxOjAwLDAzMSAtLT4gMDA6MDE6MDMsNTk3DQrslYrsnpbslYTsmpQuIOydtOqyjCDrp5DsnbQg7JWIIOuQnOuLpOqzoCDsg53qsIHsnYQg7ZW07IScIOyggO2drOqwgCDqt7jrlYwg6re464OlIOq3uCDslKjtlLzsnKDrj4QNCg0KMTYNCjAwOjAxOjAzLDY4MSAtLT4gMDA6MDE6MDcsMDE3DQrsl4bsnbQg7JWIIOuwlOq+uOqyoOuLpCDtlZjqs6DshJzripQg7KeA6riIIOuXgCDsg4Htg5zroZwg65iQIOygkOqygCDrsJvsnLzrn6wg7JioIOqxsOqxsOuToOyalC4NCg0KMTcNCjAwOjAxOjA3LDE2MSAtLT4gMDA6MDE6MTEsNDQ3DQrsoITrtoAg64ukLiDtg4jqsbDtlZjsi6Ag67aA7ZKI65OkIOqwgOyguOyYpOyFqOyWtOyalD8g7JWE64uIIOyUqO2UvOycoOuekSDqt7jrn7Ag6rKD65Ok7J2ADQoNCjE4DQowMDowMToxMSw1MzEgLS0+IDAwOjAxOjE0LDk5Nw0K66ed6rCA7KGM64uk6rOgIOyDneqwge2VmOqzoCDsp5Hsl5Ag7JWE7JiIIOuNsOumrOqzoCDsmZTsirXri4jri6QuIOuzuOyduOydtCDqsIDsoLjqsIDshJwg7ZWY6rOgIOqwgOyngOqzoA0KDQoxOQ0KMDA6MDE6MTUsMDgxIC0tPiAwMDowMToxOSwzMzcNCuyYpOqyoOuLpOqzoCDtlZjripQg6rGw7JiI7JqULiDqt7zrjbAg7KCA7Z2s64qUIOyWtOyplCDsiJgg7JeG7J6W7JWE7JqULiDqt7jrnpjslbzsp4Ag64uk7J2M64KgDQoNCjIwDQowMDowMToxOSw0NjEgLS0+IDAwOjAxOjIzLDU2Nw0K67O8IOyImCDsnojri6Tqs6Ag7ZWY64uI6rmMLiDqt7jrpqzqs6Ag64KY7IScIOyggOuFgeydtCDrj7zshJwg7Ja47KCcIOyYpOyLnOuCmOyalD/rnbzqs6Ag66y47J6Q66W8DQoNCjIxDQowMDowMToyMyw2NTEgLS0+IDAwOjAxOjI4LDAwNw0K7ZaI642U64uIIOqwkeyekOq4sCDslKjtlLzsnKDripQg7IOIIOqxuOuhnCDqu7TshJwg7KCV7IOB7J24642wIOq3uOuemO2UveydtCDrgpjqsJTri6TripQg6rGw7JiI7JqULA0KDQoyMg0KMDA6MDE6MjgsMDkxIC0tPiAwMDowMTozMywwNTcNCuq3uOuemO2UvS4g6re4656Y7ZS97Lm065OcIOyduOyLnSDrtojqsIDriqUuDQrqt7jrnpjtlL3subTrk5wg67m86rOg64+EIOydtCDsgqzsp4Qg7LCN7Jy866m0IOydtOugh+qyjCDrgpjsmYDsmpQuIOq3vOuNsCDslpjripQg7KCV7IOBLA0KDQoyMw0KMDA6MDE6MzMsMjAxIC0tPiAwMDowMTozNiw1MzcNCuyWmOuKlCDsoJXsg4EuIOyggO2drOqwgCDsmKTquLAg7KCE7JeQIOq3uCDrj5nrhKTsl5DshJwg66eMIOybkCDso7zqs6Ag7JaY66eMIO2VtOu0pOqxsOuToOyalC4NCg0KMjQNCjAwOjAxOjM2LDYyMSAtLT4gMDA6MDE6NDAsNTc3DQrsoJXsg4HsnbTsl5DsmpQuIOq3vOuNsCDsnbQg7IKs656M7J20IOyWtOyggOq7mCDsnbTqsbDrpbwg7IOI66GcIO2VtOyVvCDrkJzri6Tqs6Ag7ZWY64uI6rmMIOyggO2drOqwgA0KDQoyNQ0KMDA6MDE6NDAsNjgxIC0tPiAwMDowMTo0NCw0NzcNCu2ZlOqwgCDrgpjshJwg6rCA7KC46rCA6riwIOyghOyXkCDsoJXsg4HsnbTsl4jripTrjbAg6rCA7KC46rCA7IScIOu5hOygleyDgeyeheuLiOuLpC4g7J287LCN7J20DQoNCjI2DQowMDowMTo0NCw1ODEgLS0+IDAwOjAxOjQ5LDA1Nw0K66eQ7ZaI642U64uIIOygnOqwgCDsoJXsi53snLzroZwg7Lu07ZSM66CI7J24IOqxuOqyoOuLpOudvOqzoCDtlojrjZTri4gg7JeG642YIOydvOuhnCDtlZjsnpDripQg6rGw7JiI7JqULg0KDQoyNw0KMDA6MDE6NDksMjIxIC0tPiAwMDowMTo1Miw4OTcNCuyUqOycoOulvCDsg4gg6rG466GcIOuWvOyWtCDqsIDsi6Ag6rGw7KOgLiDqt7jroIfqsowg65CY66m0IO2YueyLnCDri6Trpbgg6rGwIOygkOqygOydhCDri6QNCg0KMjgNCjAwOjAxOjUzLDAwMSAtLT4gMDA6MDE6NTYsNzk3DQrtlbTrs7TsnpAuIOydvOuLqCDsoIDtnawg6rG466GcIO2VnOuyiCDsvJzrs7zqsozsmpQuIOq3uOuemO2Uvey5tOuTnOudvOuPhCDsp4DquIgg7J2864uoIO2VnOuyiA0KDQoyOQ0KMDA6MDE6NTYsODgxIC0tPiAwMDowMjowMCw1MzcNCuy8nOuzvOqyjOyalC4g7JeG7JeI642YIOydvOuhnCDtlZjsnpDqs6Ag7JaY6riw7ZWgIOygleuPhOuptCDrrZTqsIAg7LyV6riw64uI6rmMIOyXhuyXiOuNmCDsnbzroZwNCg0KMzANCjAwOjAyOjAwLDY0MSAtLT4gMDA6MDI6MDMsOTk3DQrtlZjsnpDqs6Ag7JaY6riw7ZWY64qUIOqxsCDslYTri4jsl5DsmpQ/IOyWtOuouOuLiOuPhCDsnZjsi6zsnbQg66eO7J20IOuQmOyLnOuLiOq5jCDsp4DquIgg7JaY6riw7ZWY7Iuc64qUDQoNCjMxDQowMDowMjowNCwxMDEgLS0+IDAwOjAyOjA3LDM5Nw0K6rGw7J6W7JWE7JqULiDri7nsi6DsnbQg7ZWcIOqyjCDruYTsg4Hsi53soIHsnbTrnbwg7Jes6riw7JeQIOuMgO2VnCDssYXsnoTsnYQg7KeA6528IOq3uOuerOuNlOuLiA0KDQozMg0KMDA6MDI6MDcsNTQxIC0tPiAwMDowMjoxMCw4NjcNCuyekOq4sCDqsbAg67m86rCA7KeA6rOgIOqwhOuLpOqzoCDtlZjsi5zrjZTrnbzqs6DsmpQuIOq3uCDrrZgg7LGF7J6E7KeEIOqxsOyVvD8g7JeG7KOgLg0KDQozMw0KMDA6MDI6MTAsOTUxIC0tPiAwMDowMjoxNiwyNTcNCuyWtOuouOuLiO2VnO2FjCDtmZTrgrgg6rGwIOyVhOuLiOyXkOyalD8g7KCA7Z2sIOqxuOuhnCDtlbTshJw/IOuPjOugpOyEnCDtmZTrqbTsnbQg7JWIIOuCmOyYpOuKlA0KDQozNA0KMDA6MDI6MTYsMzYxIC0tPiAwMDowMjoyMCwyOTcNCuqxsOuKlCDtjJTsi60g7ZSE66GcIOydtOyDgeydtCDrqZTrqqjrpqwg65WM66y47JeQLiDslpjqsIAg66y47KCc6rCAIOyeiOuLpOuKlCDqsbDslbw/IOyVhOuLiOuptC4NCg0KMzUNCjAwOjAyOjIwLDM4MSAtLT4gMDA6MDI6MjQsMzk3DQrslpgg64uk7IucIOq8veycvOuptCDri6Tsi5wg65Ok7Ja07JmA7JqULiDrkZAg6rCcIOq1kO2ZmO2VmOuptCDruaDrpbgg6rGwIOyVhOuLiOyXkOyalD8g66ee7JWE7JqULg0KDQozNg0KMDA6MDI6MjQsNDgxIC0tPiAwMDowMjoyOSwwNTcNCuq3uOugh+yjoCDsvJzsoYzso6AuIOynkeyXkCDsnojripQg7JSo7ZS87Jyg64+EIOutkCDsnbTrn7Ag7IOB7Zmp7J207JeI7JeI7J2EIOqygyDqsJnslYTsmpQuDQoNCjM3DQowMDowMjoyOSwxODEgLS0+IDAwOjAyOjMzLDI5Nw0K6re8642wIOutlOqwgCDrrLjsoJzqsIAg7KGw6riIIOyeiOq4tCDtlZjrhKQuIO2MrOydtCDqs6DsnqXrgpjshJwg7JSo7ZS87Jyg6rCAIOqzoOyepeuCrOuLpOuKlA0KDQozOA0KMDA6MDI6MzMsNDAxIC0tPiAwMDowMjozNiw2NzcNCuyVhOuLiOyVvC4g7Jew6rSA7ISx7J20IOyXhuuLpOuKlCDqsbDqs6AuIOq3uOugh+yjoC4g6re464OlIOuIhOybjOyEnCDriIgg6rCQ6rOgIOyeiOuKlOuNsCDslYTsmrAsDQoNCjM5DQowMDowMjozNiw4MDEgLS0+IDAwOjAyOjM5LDU5Nw0K64iIIOqwkOyVmOycvOuLiOq5jCDrj4zslYTqsIDshajsirXri4jri6Qu65286rOgIOyWmOq4sO2VnCDqsbDrnpEg65iR6rCZ7JWE7JqULg0KDQo0MA0KMDA6MDI6MzksNzAxIC0tPiAwMDowMjo0Myw3MTcNCuq3uCDslpjquLDripQuIOydkS4g65iQIOutkCDtjrjtlZjsi6Ag64yA66GcLiDrtoTrqoXtnoguDQoNCjQxDQowMDowMjo0Myw4MjEgLS0+IDAwOjAyOjQ3LDgzNw0K6re8642wIOutlOqwgCDqt7jrtoTqu5jshJwg6re46rG466GcIO2VtOy9lOyngOulvCDtlZjshajsnYTquYzrtJAg7KGw6riIIOu2iOyViO2VnCDqsbDsp4Ag64KY64qULg0KDQo0Mg0KMDA6MDI6NDcsOTIxIC0tPiAwMDowMjo1MSw1MzcNCuq3uOuemOyEnCDrp4zslb0g6rOg7J6l64Ks7Jy866m0IOyWtOywqO2UvCDqt7gg7IKs656M7J20IO2VnCDrsowg66y87Ja064us65286rOgIO2VoCDsiJjrj4QNCg0KNDMNCjAwOjAyOjUxLDY0MSAtLT4gMDA6MDI6NTYsMzc3DQrsl4bsnpbslYTsmpQuIOyWtOuWoe2VtOyalC4g662QIOyemOuqu+2VmOyFqOuKlOuNsCDslrTrqLjri4jqu5jshJwg6rGw6r6466GcIOq3uOufrOuptC4g7JWELA0KDQo0NA0KMDA6MDI6NTYsNDgxIC0tPiAwMDowMjo1OSw1MTcNCuyYpOuKlCDsiJzqsITrtoDthLAg7JeE7LKtIOynnOymneydhCDrgrTshJwg65CY6rKMIOu2iOyViO2WiOyWtOyalCwg7Jqw66as6rCALg0KDQo0NQ0KMDA6MDI6NTksNjAxIC0tPiAwMDowMzowMywzNDcNCuq3uOuDpSDqsr3ssLDsl5Ag7Iug6rOg7ZWY66m0IOuPvOyalC4g66ee7J6W7JWE7JqULiDqt7jqsbgg7JmcIOyasOumrOqwgCDtlbTqsrDtlbTslbwg64+8Pw0KDQo0Ng0KMDA6MDM6MDMsNDMxIC0tPiAwMDowMzowNyw1MzcNCuuyleydtCDtlbTqsrDtlbTslbzso6AuIOyemOuqu+2VnCDqsbAg7J6I7Jy866m0IOq3uCDsgqzrnozsnbQg7KOX6rCS7J2EIOuwm+yVhOyVvOyjoC4g6re4656Y7IScIOyggOydmA0KDQo0Nw0KMDA6MDM6MDcsNjIxIC0tPiAwMDowMzoxMSwzNzcNCuqwnOyduOyggeyduCDsg53qsIHsl5DshKAg7KGw6riIIOuNlCDsoJXtmZXtlZwg6rG0IOygleuwgOynhOuLqOydhCDtlbTrtJDslbwg65CY6rKg7KeA66eMLA0KDQo0OA0KMDA6MDM6MTEsNTIxIC0tPiAwMDowMzoxNCw3NTcNCuydtOqygyDrlYzrrLjsl5Ag7ZmU66m07J20IOyViCDrgpjsmZTrjZgg6rG0IOyVhOuLiOyXiOuNmCDqsoMg6rCZ7JWE7JqULiDrqZTsnbjrs7Trk5zqsIAg67CxIO2UhOuhnCwNCg0KNDkNCjAwOjAzOjE0LDg2MSAtLT4gMDA6MDM6MTcsNzI3DQrsu6jrlJTshZjsnbQg67CxIO2UhOuhnOyeheuLiOuLpCDrnbzqs6Ag66eQ7JSA65Oc66as6riw64qUIOyhsOq4iCDtnpjrk6Tqs6AuDQoNCjUwDQowMDowMzoxNyw4MTEgLS0+IDAwOjAzOjIwLDk1Nw0K7LCN6rOgIOqzhOyLnOuNmCDslKjtlLzsnKDrpbwg6rCA7KC47JmA7IScIOyXrOq4sOuLpCDslrnslrTrtJDslbwg7KCV7ZmV7ZWcIOqxuCDslYwg7IiYDQoNCjUxDQowMDowMzoyMSwwNjEgLS0+IDAwOjAzOjI0LDU4Nw0K7J6I7J2EIOqygyDqsJnslYTsmpQuIOyjvOunkOyXkCDsl6zquLAg7Zy066y064KgPyDrhKQuDQoNCjUyDQowMDowMzoyNCw2NzEgLS0+IDAwOjAzOjMwLDQ3Nw0K7KO866eQ64+EIO2VmOqzoCDsmKTsi5zquLAg7KCE7JeQLiDsoIDrhYHsl5DripQg66qHIOyLnOyXkCDsmKjri6Tqs6A/IOydvOqzseyLnCDrsJjquYzsp4AuIOyekA0KDQo1Mw0KMDA6MDM6MzAsNTYxIC0tPiAwMDowMzozNCw4MTcNCuydvOuLqOydgCDqt7jrnpjshJwg7JSo7ZS87Jyg66W8IOqwgOyngOqzoCDsp4DquIgg6rCc67Cp7J2EIO2VmOyLoCDqsbDqs6AuDQoNCjU0DQowMDowMzozNCw5ODEgLS0+IDAwOjAzOjM5LDIyNw0K7ZWc67KIIOuzvOqyjOyalC4g7J2864uoIOyngOq4iCDsnbTroIfqsowg6re464OlIOuniSDsi7jsoLjsnojripQg6rGwIOuztOuLiOq5jC4NCg0KNTUNCjAwOjAzOjM5LDMxMSAtLT4gMDA6MDM6NDIsOTc3DQrsm5Drnpgg7J2864uoIOuyhOumrOugpOqzoCDtlojri6TqsIAg7Zi57IucIOuqsOudvOyEnCDsp4DquIgg7LWc64yA7ZWcIOuztOyhtO2VtOyEnC4NCg0KNTYNCjAwOjAzOjQzLDA2MSAtLT4gMDA6MDM6NDYsOTE3DQrquLDsobTsl5Ag7JOw7Iuc642YIOqxsCDslKjtlLzsnKAg7J6l7LCpLiDslYTri4gg7J206rKMIOuYkCDshLHsp4gg64KY642YIOqygyDspJHsl5ANCg0KNTcNCjAwOjAzOjQ3LDAyMSAtLT4gMDA6MDM6NTAsOTE3DQrtlZjrgpjripQg7J20IOu2gOu2hOydhCDri6Qg67m864ao642U65286rOgLiDsp4DquIgg66q7IO2CpOqyjCDtlZjroKTqs6Ag7J206rG4DQoNCjU4DQowMDowMzo1MSwwMDEgLS0+IDAwOjAzOjU0LDYzOQ0K67m864aT7J2AIOqxtOyngCDslYTri4jrqbQg7KeE7KecIO2FjOyKpO2KuO2VmOugpOqzoCDsnbTqsbgg64ukIOu5vOuGk+ydgCDqsbTsp4Ag6re464OlLg0KDQo1OQ0KMDA6MDM6NTgsNzU5IC0tPiAwMDowNDowMSw3MTcNCuydtCDtmZTrqbTsnYQg66q7IOu0pOuNmCDqsbDsmIjsmpQuIOyymOydjOyXkCDslYgg7Lyc7KC47IScIOu2iOuggOuNmCDqsbDsmIDslrTsmpQuDQoNCjYwDQowMDowNDowMSw4MDEgLS0+IDAwOjA0OjA1LDQ4Nw0K64SI66y0IO2ZlOuCmOyalC4g64SkLiDtl5AuIOyemCDrkJjripQg6rG4IOuyhOuguOycvOuptC4g7Ja07JqwDQoNCjYxDQowMDowNDowNSw1NzEgLS0+IDAwOjA0OjA5LDkxNw0K7Ja17Jq47ZWY64ukLiDsl7Qg67Cb64qU64ukLiDsp4Tsp5wg7Je0IOuwm+uKlOuLpC4g6rOg67Cc7ZW07JW8IOuPvC4NCg0KNjINCjAwOjA0OjEwLDAwMSAtLT4gMDA6MDQ6MTMsNjQ3DQrqt7gg7KCE7ZmU67KI7Zi4IO2VtOyEnCDqs6DrsJztlbTslbwg64+8LiDri7ntlZjqs6Ag7JmA7IScIOuSpOuKpuqyjCDsmKTsi5zripQg67aE65Ok7J20DQoNCjYzDQowMDowNDoxMyw3MzEgLS0+IDAwOjA0OjE2LDc5Nw0K642UIOunjuyVhOyalC4g6re4IOyCrOuejOydtCDsi6TroKXsnYAg6re46rKD67CW7JeQIOyViCDrkJjripQg6rGw7JiI7JqULg0KDQo2NA0KMDA6MDQ6MTYsOTIxIC0tPiAwMDowNDoyMSwzOTcNCuynhOynnCDsl7Qg67Cb64qU64ukLiDsnbQg67Cc7Je065+J7J2EIOuLpCDsu6TrsoTtlaAg7IiYIOyeiOuKlCDsv6jrn6zripQg7JWE64uI7JeQ7JqULA0KDQo2NQ0KMDA6MDQ6MjEsNTIxIC0tPiAwMDowNDoyNSw1NTcNCuyCrOyLpCDslpjripQuIO2VnCDsnbQg7KCV64+EIOuQmOuKlCDsv6jrn6wuIOyggOuyiOyXkOuKlCDtlZwg7KSE7J207JeI7J6W7JWE7JqULg0KDQo2Ng0KMDA6MDQ6MjUsNjQxIC0tPiAwMDowNDozMCw2NDcNCuy/qOufrOunjCDsnqXssKnsnYQg7ZWY7Iuc66m0IOyalCDsuZzqtawg64uk7J2MIOuyhOyghOycvOuhnCDslKjtlLzsnKDqsIAg66qHIOqwnOqwgCDrjZQg64KY7JmU7Ja07JqULg0KDQo2Nw0KMDA6MDQ6MzAsNzMxIC0tPiAwMDowNDozMywxNTcNCuyigCDrjZQg7KKL7J2AIOyVoOuTpOydtCDsmKTsspwg67KI64yAIOyUqO2UvOycoOuPhA0KDQo2OA0KMDA6MDQ6MzMsMjgxIC0tPiAwMDowNDozNiwzOTcNCuyeiOqzoCDsl5HsiqQg7JOw66as65SU65286rOgIO2VtOyEnCDqsozsnoQg7Yq57ZmU64+87J6I64qUIOq3uOufsCDslKjtlLzsnKDrj4Qg7J6I6ri0DQoNCjY5DQowMDowNDozNiw1MjEgLS0+IDAwOjA0OjQwLDYyNw0K7ZWc642wIO2VmOyFlOuPhCDsnbQg7KCV64+E66eMIO2VmOyLnOuptCDstqnrtoTtnogg64ukIOy/qOufrOuKlCDqsIDriqXtlZjri4jquYwuDQoNCjcwDQowMDowNDo0MCw3MTEgLS0+IDAwOjA0OjQ2LDA1Nw0K7JeE7LKtIOuMgOuLqO2VmOqyjCDrs7Tsl6zsmpQuIOuEiOustCDsp4Tsp5wg64yA67CV7IKsLiDsp4Tsp5wg7KCA7Z2s6rCAIOuMgOuLqO2VnA0KDQo3MQ0KMDA6MDQ6NDYsMTgxIC0tPiAwMDowNDo0OSw3ODcNCuqyjCDslYTri4jrnbwg7J206rKMIOygleyDgeyduCDqsbDsmIjsmpQuIOyVhO2ctCDqt7jrnpjrj4Qg7J206rKMIOyWtOuUlCDslYTtnLQuDQoNCjcyDQowMDowNDo0OSw4NzEgLS0+IDAwOjA0OjUyLDYwNw0K7KCA7Z2sIOyeheyepeyXkOyEnCDrs7TrqbQg7J206rG0IOutkC4g7JWE64uIIOuEiOustCDsi6DquLDtlZjsnpbslYTsmpQsDQoNCjczDQowMDowNDo1Miw2OTEgLS0+IDAwOjA0OjU5LDMwNw0K7KeA6riILiDsmrDrpqwg6re8642wIOq3uOuemO2UveydtOuekSDslKjtlLzsnKAg64ukIOuwlOq/gCDru5TtlojrhKQuDQrstpzsnqXsnZgg7LWc64yA7J2YIOuLqOygkOydtOyngC4g64KY66aEIOyghOusuOqwgOudvOqzoCDslZ7sl5Ag7JmA7J6I64qUIOyCrOuejOydtOuLiOq5jCDrr7/snYQNCg0KNzQNCjAwOjA0OjU5LDM5MSAtLT4gMDA6MDU6MDIsOTA3DQrsiJjrsJbsl5Ag7JeG64qUIOyDge2ZqeydtOqzoCDtlZjrnbzripQg64yA66GcIOuLpCDtlZjqsowg65CY64uI6rmMLiDrsoTrpqzrnbzqs6ANCg0KNzUNCjAwOjA1OjAyLDk5MSAtLT4gMDA6MDU6MDcsNTc3DQrqt7jrn6zrqbQg66mA7Kmh7ZaI642YIOyUqO2UvOycoOuPhCDrg4nsnqXqs6Ag662QIOyTsOugiOq4sO2GteyXkOyEnCDsp4DquIjquYzsp4AuDQrsk7DroIjquLDthrXquYzsp4Ag65Ok7Ja06rCU64uk6rCAIOyngOq4iCDrubzsmKgg6rGw7JiI7JqULiDslrTslrTslrQuDQoNCjc2DQowMDowNTowNyw2NjEgLS0+IDAwOjA1OjEyLDMxOQ0K6re466CH6rKMIOuQoCDsiJjrsJbsl5Ag7JeG64qUIOqxsOyYiOyalC4g6rOg66eZ7Iq164uI64ukLiDsobDsi6ztnogg65Ok7Ja06rCA7IS47JqULiDrhKQuDQo=",
-  //   extras: {},
-  //   status: 0,
-  // };
-  // }
-};
-
-export const requestTranslation = async (request_id: string, lng: string) => {
-  try {
-    const encoded = await getEncodedTranscription(request_id);
-
-    const response = await base.post(
-      "https://api.xl8.ai/v1/trans/request/file",
-      {
-        source_language: lng,
-        target_language: "en",
-        subtitle_type: "srt",
-        encoded_subtitle: encoded,
-      },
-    );
-
-    return response.data;
-  } catch (err) {
-    console.error("requestTranslation error:", err?.response?.data);
-    throw new Error("Failed to request transcription");
-  }
-  // finally {
-  //   return {
-  //     request_id: "7382d5525b354229a554f327e231495b",
-  //     status: 0,
-  //   };
-  // }
-};
-
-export const getTranslationStatus = async (request_id: string) => {
-  try {
-    const response = await base.get(
-      `https://api.xl8.ai/v1/trans/requests/file/${request_id}`,
-      {
-        params: {
-          subtitle_type: "srt",
-        },
-      },
-    );
-
-    return response.data.status;
-  } catch (err) {
-    console.error("getTranslation error:", err?.response?.data);
-    throw new Error("Failed to request transcription");
-  }
-};
-
-export const getTranslation = async (request_id: string) => {
-  try {
-    const response = await base.get(
-      `https://api.xl8.ai/v1/trans/requests/file/${request_id}`,
-      {
-        params: {
-          subtitle_type: "srt",
-        },
-      },
-    );
-
-    return response.data;
-  } catch (err) {
-    console.error("getTranslation error:", err?.response?.data);
     throw new Error("Failed to request transcription");
   }
 };
